@@ -1,10 +1,13 @@
 #! /usr/bin/env coffee
+#
+# Generate the package.json file
+#
 github = 'github.com/mattly/behold'
-tags = 'pubsub observable'.split(' ')
+tags = 'pubsub observable reactive FRP'.split(' ')
 info =
   name: 'behold'
   description: 'simple pubsub/observers using ECMA5 getters/setters'
-  version: '0.0.1'
+  version: '0.0.2'
   author: 'Matthew Lyon <matthew@lyonheart.us>'
   keywords: tags
   tags: tags

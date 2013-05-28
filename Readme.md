@@ -26,6 +26,11 @@ Returns the object provided.
 Call function **fn** when the property **propertyName** on object **obj**
 changes.
 
+### behold.update(obj, updateObj)
+
+Update the previously beholden object **obj** with new values from object
+**updateObj**. Will add missing values if needed.
+
 ## Issues / Problems / Roadmap
 
 * Requires ECMA5, so it'll work in IE9+ but not older.

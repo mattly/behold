@@ -1,16 +1,31 @@
 class Watcher
-  constructor: (@value) ->
+  @dependentStack = []
+  @dependent = -> @dependentStack[@dependentStack.length - 1]
+
+  constructor: (@name) ->
+    @dependents = []
     @subscribers = []
   get: =>
+    # prevent circular deps
+    # if Watcher.dependentStack.indexOf(this) isnt -1
+    if dependent = Watcher.dependent() then @dependents.push(dependent)
+    if @dependent
+      Watcher.dependentStack.push(this)
+      @value = @valueGetter()
+      Watcher.dependentStack.pop()
     @value
   set: (newVal) =>
-    process.nextTick(@notifySubscribers)
     @value = newVal
-  notifySubscribers: =>
-    fn() for fn in @subscribers
+    @notify()
+    newVal
   subscribe: (fn) ->
     @subscribers.push(fn)
     this
+  notify: ->
+    process.nextTick(=> @notifySubscribers())
+    watcher.notify() for watcher in @dependents
+  notifySubscribers: ->
+    fn(@value) for fn in @subscribers
 
 stateKey = "_behold"
 
@@ -23,17 +38,22 @@ main = (obj, whitelist) ->
     main.defineObserver(obj, name, obj[name])
   obj
 
+define = (obj, propName, config) ->
+  config.enumerable or= true
+  config.configurable or= true
+  Object.defineProperty(obj, propName, config)
+
 main.defineObserver = (obj, propName, val) ->
-  switch typeof val
-    when 'function' then false
-    when 'object' then false
-    else
-      obj[stateKey][propName] = watch = new Watcher(val)
-      Object.defineProperty(obj, propName, {
-        enumerable: true
-        get: watch.get
-        set: watch.set
-      })
+  obj[stateKey][propName] = watch = new Watcher(propName)
+  if typeof val is 'function'
+    watch.dependent = true
+    watch.valueGetter = val.bind(obj)
+    watch.get()
+    define(obj, propName, {get: watch.get, set: undefined})
+  else if typeof val is 'object' then false
+  else
+    watch.value = val
+    define(obj, propName, {get: watch.get, set: watch.set})
 
 main.getObs = (obj, prop) ->
   obj[stateKey][prop]

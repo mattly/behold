@@ -41,10 +41,11 @@ main.getObs = (obj, prop) ->
 main.subscribe = (obj, prop, fn, context) ->
   main.getObs(obj, prop).subscribe(fn, context)
 
-# main.update = (targetObj, sourceObj) ->
-#   for own key, value of sourceObj
-#     if not main.getObs(targetObj, key)
-#       main.defineProperty(targetObj, key, value)
-#     else targetObj[key] = value
+main.update = (targetObj, sourceObj) ->
+  for own key, value of sourceObj
+    if not main.getObs(targetObj, key)
+      main[key] = value
+      main.defineObserver(targetObj, key, value)
+    else targetObj[key] = value
 
 module.exports = main

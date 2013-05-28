@@ -29,15 +29,33 @@ changes.
 ## Issues / Problems / Roadmap
 
 * Requires ECMA5, so it'll work in IE9+ but not older.
-* Watches only ownProperty values that are not functions/objects/arrays:
-  - ownProperty functions will become expressions:
-      o = {handle:'mattly', twitter:function(){ return "@"+this.handle } }
-      behold(o)
-      o.handle = 'matthewlyon'
-      o.twitter // @matthewlyon
-  - arrays will gain push/pop/slice/shift accessors:
-      o = behold({arr: [1,2,3]})
-      behold.subscribe(o, 'arr', function(){ console.log(o.arr.length) })
-      o.arr.push(4)
-      // 4
-  - objects will track the setting of, but not their own properties.
+* Watches only ownProperty values not function/object/arrays.
+* ownProperty functions will become expressions:
+
+    ``` javascript
+    o = {
+      handle:'mattly',
+      twitter:function(){ return "@"+this.handle }
+    };
+    behold(o);
+    o.handle = 'matthewlyon';
+    o.twitter // @matthewlyon;
+    ```
+
+* arrays will gain push/pop/slice/shift accessors:
+
+    ``` javascript
+    o = behold({arr: [1,2,3]})
+    behold.subscribe(o, 'arr', function(){ console.log(o.arr.length) })
+    o.arr.push(4)
+    // 4
+    ```
+
+* objects will track the setting of, but not their own properties.
+
+## Acknowledgements
+
+Inspired by working with [Knockout][], but realizing I wanted something much
+smaller in scope / functionality, and without the function calls.
+
+[Knockout]: http://knockoutjs.com/

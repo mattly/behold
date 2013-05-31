@@ -4,7 +4,7 @@ Simple PubSub / Observers for object properties using ECMA5 getters/setters.
 Still *very much* a work in progress.
 
 ``` javascript
-obj = { one: 1, two: 2 };
+var obj = { one: 1, two: 2 };
 behold(obj);
 behold.subscribe(obj, 'one', function(){ console.log('obj.one:',obj.one); });
 obj.one = 'one';
@@ -38,7 +38,7 @@ Update the previously beholden object **obj** with new values from object
 * ownProperty functions will become expressions:
 
     ``` javascript
-    o = {
+    var o = {
       handle:'mattly',
       twitter:function(){ return "@"+this.handle }
     };
@@ -50,9 +50,9 @@ Update the previously beholden object **obj** with new values from object
 * arrays will gain push/pop/slice/shift accessors:
 
     ``` javascript
-    o = behold({arr: [1,2,3]})
-    behold.subscribe(o, 'arr', function(){ console.log(o.arr.length) })
-    o.arr.push(4)
+    var o = behold({arr: [1,2,3]});
+    behold.subscribe(o, 'arr', function(){ console.log(o.arr.length) });
+    o.arr.push(4);
     // 4
     ```
 

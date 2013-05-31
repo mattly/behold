@@ -1,3 +1,17 @@
+Eye =
+  stack: []
+  active: -> @stack[@stack.length - 1]
+  addActiveDependent: (arr) ->
+    active = @active()
+    if if active and arr.indexOf(active) is -1 then arr.push(active)
+  track: (watcher, getter) ->
+    # throw if stack inclues watcher, prevent circular deps
+    # if @stack.indexOf(watcher) isnt -1 then ...
+    @stack.push(watcher)
+    val = getter()
+    @stack.pop(watcher)
+    val
+
 class Watcher
   @dependentStack = []
   @dependent = -> @dependentStack[@dependentStack.length - 1]
@@ -6,13 +20,8 @@ class Watcher
     @dependents = []
     @subscribers = []
   get: =>
-    # prevent circular deps
-    # if Watcher.dependentStack.indexOf(this) isnt -1
-    if dependent = Watcher.dependent() then @dependents.push(dependent)
-    if @dependent
-      Watcher.dependentStack.push(this)
-      @value = @valueGetter()
-      Watcher.dependentStack.pop()
+    Eye.addActiveDependent(@dependents)
+    if @dependent then @value = Eye.track(this, @valueGetter)
     @value
   set: (newVal) =>
     @value = newVal
@@ -45,15 +54,18 @@ define = (obj, propName, config) ->
 
 main.defineObserver = (obj, propName, val) ->
   obj[stateKey][propName] = watch = new Watcher(propName)
+  valuesToInit = []
   if typeof val is 'function'
     watch.dependent = true
     watch.valueGetter = val.bind(obj)
-    watch.get()
+    valuesToInit.push(watch)
     define(obj, propName, {get: watch.get, set: undefined})
   else if typeof val is 'object' then false
   else
     watch.value = val
     define(obj, propName, {get: watch.get, set: watch.set})
+  watch.get() for watch in valuesToInit
+  obj
 
 main.getObs = (obj, prop) ->
   obj[stateKey][prop]

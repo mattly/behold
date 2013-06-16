@@ -3,7 +3,7 @@ Eye =
   active: -> @stack[@stack.length - 1]
   addActiveDependent: (arr) ->
     active = @active()
-    if if active and arr.indexOf(active) is -1 then arr.push(active)
+    if active and arr.indexOf(active) is -1 then arr.push(active)
   track: (watcher, getter) ->
     # throw if stack inclues watcher, prevent circular deps
     # if @stack.indexOf(watcher) isnt -1 then ...

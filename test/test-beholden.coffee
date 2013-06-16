@@ -17,7 +17,6 @@ assert.ok(obj._behold.reply)
 
 changed = 0
 trackChange = (val) ->
-  console.log(val)
   changed += 1
 
 main.subscribe(obj, 'handle', trackChange)

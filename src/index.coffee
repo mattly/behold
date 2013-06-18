@@ -38,12 +38,11 @@ class Watcher
 
 stateKey = "_behold"
 
-main = (obj, whitelist) ->
+main = (obj) ->
   observables = {}
   properties = Object.getOwnPropertyNames(obj)
-  unless whitelist instanceof Array then whitelist = properties
   Object.defineProperty(obj, stateKey, { value: observables })
-  for name in Object.keys(obj) when whitelist.indexOf(name) > -1
+  for name in Object.keys(obj)
     main.defineObserver(obj, name, obj[name])
   obj
 
@@ -67,15 +66,15 @@ main.defineObserver = (obj, propName, val) ->
   watch.get() for watch in valuesToInit
   obj
 
-main.getObs = (obj, prop) ->
+main.getObserver = (obj, prop) ->
   obj[stateKey][prop]
 
 main.subscribe = (obj, prop, fn, context) ->
-  main.getObs(obj, prop).subscribe(fn, context)
+  main.getObserver(obj, prop).subscribe(fn, context)
 
 main.update = (targetObj, sourceObj) ->
   for own key, value of sourceObj
-    if not main.getObs(targetObj, key)
+    if not main.getObserver(targetObj, key)
       main[key] = value
       main.defineObserver(targetObj, key, value)
     else targetObj[key] = value

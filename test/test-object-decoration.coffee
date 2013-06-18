@@ -18,7 +18,7 @@ inst = new User({
   last: 'Lyon',
   name: -> @first + ' ' + @last
 })
-inst = main(inst)
+main(inst)
 
 assert.ok(inst._behold)
 
@@ -41,14 +41,3 @@ secret = Object.getOwnPropertyDescriptor(inst, 'id')
 assert.equal(secret.get, undefined)
 assert.equal(secret.set, undefined)
 
-obj = {one: 1, two: 2}
-main(obj, ['one'])
-
-one = Object.getOwnPropertyDescriptor(obj, 'one')
-assert.ok(one.get)
-assert.ok(one.set)
-assert.equal(one.enumerable, true)
-
-two = Object.getOwnPropertyDescriptor(obj, 'two')
-assert.equal(two.get, undefined)
-assert.equal(two.set, undefined)

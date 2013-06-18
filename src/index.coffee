@@ -12,65 +12,73 @@ Eye =
     @stack.pop(watcher)
     val
 
-class Watcher
-  @dependentStack = []
-  @dependent = -> @dependentStack[@dependentStack.length - 1]
-
-  constructor: (@name) ->
-    @dependents = []
-    @subscribers = []
-  get: =>
-    Eye.addActiveDependent(@dependents)
-    if @dependent then @value = Eye.track(this, @valueGetter)
-    @value
-  set: (newVal) =>
-    @value = newVal
-    @notify()
-    newVal
-  subscribe: (fn) ->
-    @subscribers.push(fn)
-    this
-  notify: ->
-    process.nextTick(=> @notifySubscribers())
-    watcher.notify() for watcher in @dependents
-  notifySubscribers: ->
-    fn(@value) for fn in @subscribers
-
-stateKey = "_behold"
-
-main = (obj) ->
-  observables = {}
-  properties = Object.getOwnPropertyNames(obj)
-  Object.defineProperty(obj, stateKey, { value: observables })
-  for name in Object.keys(obj)
-    main.defineObserver(obj, name, obj[name])
-  obj
-
 define = (obj, propName, config) ->
   config.enumerable or= true
   config.configurable or= true
   Object.defineProperty(obj, propName, config)
 
-main.defineObserver = (obj, propName, val) ->
-  obj[stateKey][propName] = watch = new Watcher(propName)
-  valuesToInit = []
-  if typeof val is 'function'
-    watch.dependent = true
-    watch.valueGetter = val.bind(obj)
-    valuesToInit.push(watch)
-    define(obj, propName, {get: watch.get, set: undefined})
-  else if typeof val is 'object' then false
-  else
-    watch.value = val
-    define(obj, propName, {get: watch.get, set: watch.set})
-  watch.get() for watch in valuesToInit
-  obj
+class Beholden
+  constructor: (@object) ->
+    @dependents = []
+    @subscribers = []
+    @properties = {}
+    @changes = new Beholden.Changes(@__notify.bind(this))
+    for name in Object.keys(@object)
+      prop = @properties[name] = new Beholden.Property(@object[name], @__notifier(name))
+      if typeof @object[name] is 'function'
+        prop.dependent = true
+        prop.valueGetter = @object[name].bind(@object)
+        prop.update()
+      define(@object, name, { get: prop.get, set: prop.set })
+  __notifier: (name) ->
+    => @changes.push(name)
+  __notify: ->
+    changed = @changes.harvest()
+    for sub in @subscribers when changed.indexOf(sub.property) > -1
+      sub.fn(@properties[sub.property].value)
 
-main.getObserver = (obj, prop) ->
-  obj[stateKey][prop]
+  subscribe: (property, fn) ->
+    if typeof fn isnt 'function' then throw new TypeError("must provide Function")
+    if typeof property isnt 'string' then throw new TypeError("must provide String")
+    @subscribers.push({property, fn})
+    this
 
-main.subscribe = (obj, prop, fn, context) ->
-  main.getObserver(obj, prop).subscribe(fn, context)
+class Beholden.Property
+  constructor: (@value, @bang) ->
+    @dependents = []
+  get: =>
+    Eye.addActiveDependent(@dependents)
+    @value
+  set: (newVal) =>
+    @value = newVal
+    dep.update() for dep in @dependents
+    @bang()
+    newVal
+  update: ->
+    if @dependent then @set(Eye.track(this, @valueGetter))
+
+class Beholden.Changes
+  constructor: (@trigger) ->
+    @list = []
+    @tipped = false
+  push: (name) ->
+    if @list.indexOf(name) is -1 then @list.push(name)
+    if not @tipped
+      @tipped = true
+      setTimeout(@trigger, 0)
+  harvest: ->
+    @tipped = false
+    ret = (name for name in @list)
+    @list = []
+    ret
+
+stateKey = "_behold"
+
+main = (obj) ->
+  if obj[stateKey] then return obj[stateKey]
+  beholden = new Beholden(obj)
+  Object.defineProperty(obj, stateKey, { value: beholden })
+  beholden
 
 main.update = (targetObj, sourceObj) ->
   for own key, value of sourceObj

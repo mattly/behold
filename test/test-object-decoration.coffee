@@ -30,7 +30,7 @@ assert.equal(handle.enumerable, true)
 assert.equal(inst.name, "#{inst.first} #{inst.last}")
 name = Object.getOwnPropertyDescriptor(inst, 'name')
 assert.ok(name.get)
-assert.equal(name.set, undefined)
+assert.ok(name.set)
 assert.equal(handle.enumerable, true)
 
 assert.equal(inst.twitter(), "@#{inst.handle}")

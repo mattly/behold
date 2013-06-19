@@ -1,21 +1,28 @@
-Eye =
+deps =
   stack: []
-  active: -> @stack[@stack.length - 1]
-  addActiveDependent: (arr) ->
-    active = @active()
+  push: (arr) ->
+    active = @stack[@stack.length - 1]
     if active and arr.indexOf(active) is -1 then arr.push(active)
-  track: (watcher, getter) ->
+  track: (property, getter) ->
     # throw if stack inclues watcher, prevent circular deps
     # if @stack.indexOf(watcher) isnt -1 then ...
-    @stack.push(watcher)
+    @stack.push(property)
     val = getter()
-    @stack.pop(watcher)
+    @stack.pop(property)
     val
 
-define = (obj, propName, config) ->
-  config.enumerable or= true
-  config.configurable or= true
-  Object.defineProperty(obj, propName, config)
+defineProperty = (object, name, prop) ->
+  if typeof object[name] is 'function'
+    prop.dependent = true
+    prop.valueGetter = object[name].bind(object)
+    prop.update()
+  Object.defineProperty(object, name, {
+    enumerable: true
+    configurable: true
+    get: prop.get
+    set: prop.set
+  })
+  prop
 
 class Beholden
   constructor: (@object) ->
@@ -24,12 +31,8 @@ class Beholden
     @properties = {}
     @changes = new Beholden.Changes(@__notify.bind(this))
     for name in Object.keys(@object)
-      prop = @properties[name] = new Beholden.Property(@object[name], @__notifier(name))
-      if typeof @object[name] is 'function'
-        prop.dependent = true
-        prop.valueGetter = @object[name].bind(@object)
-        prop.update()
-      define(@object, name, { get: prop.get, set: prop.set })
+      @properties[name] = new Beholden.Property(@object[name], @__notifier(name))
+      defineProperty(@object, name, @properties[name])
   __notifier: (name) ->
     => @changes.push(name)
   __notify: ->
@@ -43,11 +46,19 @@ class Beholden
     @subscribers.push({property, fn})
     this
 
+  update: (source) ->
+    for key, value of source
+      if not @properties[key]
+        @properties[key] = new Beholden.Property(value, @__notifier(key))
+        defineProperty(@object, key, @properties[key])
+      else @object[key] = value
+    this
+
 class Beholden.Property
   constructor: (@value, @bang) ->
     @dependents = []
   get: =>
-    Eye.addActiveDependent(@dependents)
+    deps.push(@dependents)
     @value
   set: (newVal) =>
     @value = newVal
@@ -55,7 +66,7 @@ class Beholden.Property
     @bang()
     newVal
   update: ->
-    if @dependent then @set(Eye.track(this, @valueGetter))
+    if @dependent then @set(deps.track(this, @valueGetter))
 
 class Beholden.Changes
   constructor: (@trigger) ->
@@ -79,12 +90,5 @@ main = (obj) ->
   beholden = new Beholden(obj)
   Object.defineProperty(obj, stateKey, { value: beholden })
   beholden
-
-main.update = (targetObj, sourceObj) ->
-  for own key, value of sourceObj
-    if not main.getObserver(targetObj, key)
-      main[key] = value
-      main.defineObserver(targetObj, key, value)
-    else targetObj[key] = value
 
 module.exports = main

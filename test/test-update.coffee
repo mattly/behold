@@ -6,9 +6,9 @@ obj = {
   two: 2
 }
 
-behold(obj)
+beholden = behold(obj)
 
-behold.update(obj, {
+beholden.update({
   one: 'one'
   three: 'three'
 })
@@ -16,4 +16,4 @@ behold.update(obj, {
 assert.equal(obj.one, 'one')
 assert.equal(obj.two, 2)
 assert.equal(obj.three, 'three')
-assert(obj._behold.three)
+assert(beholden.properties.three)

@@ -18,7 +18,8 @@ assert.ok(beholden.properties.reply)
 assert.equal(beholden.properties.reply.value, '@mattly: ')
 
 changed = 0
-trackChange = (val) ->
+trackChange = (val, updated) ->
+  assert.deepEqual(updated, obj)
   changed += 1
 
 beholden.subscribe('handle', trackChange)

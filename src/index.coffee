@@ -51,7 +51,7 @@ class Beholden
     @properties[name] = defineProperty(@object, name, notifier)
   __notify: =>
     for sub in @subscribers when @changes.indexOf(sub.property) > -1
-      sub.fn(@properties[sub.property].value)
+      sub.fn(@properties[sub.property].value, @object)
     @changes = []
 
   subscribe: (property, fn) ->

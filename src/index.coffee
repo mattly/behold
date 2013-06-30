@@ -12,10 +12,18 @@ deps =
     val
 
 defineProperty = (object, name, trigger) ->
-  config = { name, value: object[name], dependents: [] }
-  if typeof object[name] is 'function'
+  target = object[name]
+  config = { name, value: target, dependents: [] }
+  if typeof target is 'function'
     config.expression = true
-    config.valueGetter = object[name].bind(object)
+    config.valueGetter = val.bind(object)
+  if target instanceof Array
+    ['push', 'pop', 'unshift', 'shift'].forEach (prop) ->
+      Object.defineProperty(target, prop, {
+        value: (val) ->
+          trigger([name])
+          Array::[prop].call(target, val)
+      })
   Object.defineProperty(object, name, {
     enumerable: true
     configurable: true

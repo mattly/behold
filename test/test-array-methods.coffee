@@ -6,14 +6,14 @@ obj = {
 }
 
 expected = undefined
-changed = 0
+checkedExpected = 0
 
-checkChange = (newVal) ->
-  changed += 1
+checkExpected = (newVal) ->
+  checkedExpected += 1
   assert.deepEqual(newVal, expected)
 
 beholden = main(obj)
-  .subscribe('arr', checkChange)
+  .subscribe('arr', checkExpected)
 
 assertions = []
 
@@ -45,11 +45,31 @@ assertions.push ->
   assert.equal(obj.arr.length, 3)
   assert.deepEqual(obj.arr, expected)
 
-# cause triggers
-# - sort
-# - splice
-# - reverse
-#
+assertions.push ->
+  expected = ['c','b','a']
+  reversed = obj.arr.reverse()
+  assert.deepEqual(reversed, expected)
+  assert.deepEqual(obj.arr, expected)
+
+assertions.push ->
+  expected = ['a','b','c']
+  sorted = obj.arr.sort()
+  assert.deepEqual(sorted, expected)
+  assert.deepEqual(obj.arr, expected)
+
+assertions.push ->
+  expected = ['a','d','e','c']
+  removed = obj.arr.splice(1,1,'d','e')
+  assert.deepEqual(removed, ['b'])
+  assert.deepEqual(obj.arr, expected)
+
+assertions.push ->
+  expected = ['e','d','c','a']
+  sorter = (l,r) -> if l > r then -1 else 1
+  sorted = obj.arr.sort(sorter)
+  assert.deepEqual(sorted, expected)
+  assert.deepEqual(obj.arr, expected)
+
 # make computeds / dependents
 # - length
 #
@@ -62,7 +82,7 @@ assertions.push ->
 # make sure all the trigger was called for each op
 totalAssertions = assertions.length
 assertions.push ->
-  assert.equal(totalAssertions, changed)
+  assert.equal(totalAssertions, checkedExpected)
 
 # since triggers are pushed to the end of the callstack, we need to push our
 # assertions back further

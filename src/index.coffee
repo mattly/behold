@@ -18,11 +18,11 @@ defineProperty = (object, name, trigger) ->
     config.expression = true
     config.valueGetter = val.bind(object)
   if target instanceof Array
-    ['push', 'pop', 'unshift', 'shift'].forEach (prop) ->
+    'push pop unshift shift reverse sort splice'.split(' ').forEach (prop) ->
       Object.defineProperty(target, prop, {
-        value: (val) ->
+        value: (args...) ->
           trigger([name])
-          Array::[prop].call(target, val)
+          Array::[prop].call(target, args...)
       })
   Object.defineProperty(object, name, {
     enumerable: true

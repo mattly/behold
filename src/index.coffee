@@ -14,7 +14,7 @@ deps =
 defineProperty = (object, name, trigger) ->
   target = object[name]
   config = { name, value: target, dependents: [] }
-  if typeof target is 'function'
+  if target instanceof Function
     config.expression = true
     config.valueGetter = val.bind(object)
   if target instanceof Array

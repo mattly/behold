@@ -16,7 +16,7 @@ defineProperty = (object, name, trigger) ->
   config = { name, value: target, dependents: [] }
   if target instanceof Function
     config.expression = true
-    config.valueGetter = val.bind(object)
+    config.valueGetter = target.bind(object)
   if target instanceof Array
     'push pop unshift shift reverse sort splice'.split(' ').forEach (prop) ->
       Object.defineProperty(target, prop, {

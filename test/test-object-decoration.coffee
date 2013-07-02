@@ -41,3 +41,4 @@ secret = Object.getOwnPropertyDescriptor(inst, 'id')
 assert.equal(secret.get, undefined)
 assert.equal(secret.set, undefined)
 
+console.log('ok')

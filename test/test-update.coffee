@@ -17,3 +17,5 @@ assert.equal(obj.one, 'one')
 assert.equal(obj.two, 2)
 assert.equal(obj.three, 'three')
 assert(beholden.properties.three)
+
+console.log('ok')

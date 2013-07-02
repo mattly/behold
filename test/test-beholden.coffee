@@ -34,4 +34,5 @@ assert.equal(obj.reply, '@lyonheart: ')
 
 afterChange = ->
   assert.equal(changed, 3)
+  console.log('ok')
 setTimeout(afterChange, 2)

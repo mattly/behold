@@ -90,7 +90,7 @@ main = (obj) ->
   Object.defineProperty(obj, stateKey, { value: beholden })
   beholden
 
-if typeof this is 'object' and module
+if typeof this is 'object' and typeof module is 'object'
   module.exports = main
 else if typeof define is 'function' and define.amd
   define(main)

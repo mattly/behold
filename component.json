@@ -1,7 +1,7 @@
 {
   "name": "behold",
   "description": "simple pubsub/observers using ECMA5 getters/setters",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Matthew Lyon <matthew@lyonheart.us>",
   "keywords": [
     "pubsub",

@@ -9,7 +9,7 @@ tags = 'pubsub observable reactive FRP'.split(' ')
 base =
   name: 'behold'
   description: 'simple pubsub/observers using ECMA5 getters/setters'
-  version: '0.1.0'
+  version: '0.1.1'
   author: 'Matthew Lyon <matthew@lyonheart.us>'
   keywords: tags
   tags: tags
@@ -30,7 +30,7 @@ package_json =
   devDependencies:
     'coffee-script': '1.6.x'
   scripts:
-    prepublish: './node_modules/.bin/coffee -c -b -p src/index.coffee > index.js'
+    prepublish: './node_modules/.bin/coffee -c -p src/index.coffee > index.js'
     test: './node_modules/.bin/coffee test/run.coffee'
 
   engines: { node: '*' }
@@ -52,5 +52,4 @@ fs = require('fs')
 fs.writeFileSync('package.json', make(package_json))
 fs.writeFileSync('component.json', make(component_json))
 fs.writeFileSync('bower.json', make(bower_json))
-
 

@@ -45,6 +45,20 @@ assertions.push ->
   assert.equal(obj.arr.length, 3)
   assert.deepEqual(obj.arr, expected)
 
+# cause triggers
+# - sort
+# - splice
+# - reverse
+#
+# make computeds / dependents
+# - length
+#
+# return a computed / dependent ?
+# - every
+# - filter
+# - map
+# - some
+
 # make sure all the trigger was called for each op
 totalAssertions = assertions.length
 assertions.push ->

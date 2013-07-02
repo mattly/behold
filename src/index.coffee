@@ -1,3 +1,4 @@
+
 deps =
   stack: []
   addActive: (arr) ->
@@ -89,4 +90,9 @@ main = (obj) ->
   Object.defineProperty(obj, stateKey, { value: beholden })
   beholden
 
-module.exports = main
+if typeof this is 'object' and module
+  module.exports = main
+else if typeof define is 'function' and define.amd
+  define(main)
+else
+  this.behold = main

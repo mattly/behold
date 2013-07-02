@@ -20,19 +20,7 @@
   "bugs": "https://github.com/mattly/behold/issues",
   "license": "MIT",
   "main": "index.js",
-  "devDependencies": {
-    "coffee-script": "1.6.x"
-  },
-  "scripts": {
-    "prepublish": "./node_modules/.bin/coffee -c -b -p src/index.coffee > index.js",
-    "test": "./node_modules/.bin/coffee test/run.coffee"
-  },
-  "engines": {
-    "node": "*"
-  },
-  "component": {
-    "scripts": {
-      "behold": "index.js"
-    }
-  }
+  "scripts": [
+    "index.js"
+  ]
 }

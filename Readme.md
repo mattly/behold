@@ -74,6 +74,7 @@ Returns the Beholden.
 * Requires ECMA5, so it'll work in IE9+ but not older.
 * Will transform all enumerable properties on the object, ownProperty or not.
 * Array#length is not subscribable.
+* Roadmap: will recurse into object values on the target object
 
 ## Acknowledgements
 

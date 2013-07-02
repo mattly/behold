@@ -19,5 +19,9 @@
   "repository": "git://github.com/mattly/behold.git",
   "bugs": "https://github.com/mattly/behold/issues",
   "license": "MIT",
-  "main": "index.js"
+  "main": "index.js",
+  "ignore": [
+    "**/.*",
+    "node_modules"
+  ]
 }

@@ -42,9 +42,15 @@ package_json =
 component_json =
   scripts: ["index.js"]
 
+bower_json =
+  ignore: [
+    "**/.*"
+    "node_modules"
+  ]
+
 fs = require('fs')
 fs.writeFileSync('package.json', make(package_json))
 fs.writeFileSync('component.json', make(component_json))
-fs.writeFileSync('bower.json', make())
+fs.writeFileSync('bower.json', make(bower_json))
 
 

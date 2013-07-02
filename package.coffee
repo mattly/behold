@@ -7,7 +7,7 @@ tags = 'pubsub observable reactive FRP'.split(' ')
 info =
   name: 'behold'
   description: 'simple pubsub/observers using ECMA5 getters/setters'
-  version: '0.0.2'
+  version: '0.1.0'
   author: 'Matthew Lyon <matthew@lyonheart.us>'
   keywords: tags
   tags: tags

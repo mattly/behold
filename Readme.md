@@ -19,7 +19,7 @@ var beholden = behold(obj)
   .update({one: 'One', two: 'Two'});
 
 console.log(obj.one, obj.two)
-// 'One', 'two'
+// 'One', 'Two'
 
 var beholder = behold(function(){ return obj.one + obj.two })
   .subscribe(function(val){ console.log('onetwo', val); });
@@ -29,6 +29,7 @@ obj.one = 'one'
 
 // arr 4
 // one 'one'
+// two 'Two'
 // onetwo 'oneTwo'
 ```
 

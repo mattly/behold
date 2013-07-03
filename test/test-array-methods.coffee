@@ -84,14 +84,6 @@ totalAssertions = assertions.length
 assertions.push ->
   assert.equal(totalAssertions, checkedExpected)
 
-# since triggers are pushed to the end of the callstack, we need to push our
-# assertions back further
-run = ->
-  next = assertions.shift()
-  if next
-    next()
-    setTimeout(run, 1)
-  else console.log('ok')
+require('./chain')(assertions, -> console.log('ok'))
 
-setTimeout(run, 1)
 

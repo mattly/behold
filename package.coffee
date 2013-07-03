@@ -5,11 +5,11 @@
 # Generate the bower.json file for Bower
 #
 github = 'github.com/mattly/behold'
-tags = 'pubsub observable reactive FRP'.split(' ')
+tags = 'observable reactive FRP pubsub publish subscribe'.split(' ')
 base =
   name: 'behold'
-  description: 'simple pubsub/observers using ECMA5 getters/setters'
-  version: '0.1.1'
+  description: 'simple frp/pubsub/observers using ECMA5 getters/setters'
+  version: '0.2.0'
   author: 'Matthew Lyon <matthew@lyonheart.us>'
   keywords: tags
   tags: tags

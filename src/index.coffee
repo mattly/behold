@@ -12,24 +12,40 @@ deps =
     @stack.pop(config)
     val
 
-defineProperty = (object, name, trigger) ->
+class Beholdable
+  constructor: ->
+    @dependents = []
+    @subscribers = []
+    @__triggered = false
+  __trigger: ->
+    if @__triggered then return
+    @__triggered = true
+    setTimeout(@__fire, 0)
+    dep.__trigger() for dep in @dependents
+  __fire: =>
+    @__triggered = false
+    sub(@value) for sub in @subscribers
+  subscribe: (fn) ->
+    if typeof fn isnt 'function' then throw new TypeError("must provide Function")
+    @subscribers.push(fn)
+    this
+
+defineProperty = (object, name) ->
   target = object[name]
-  config = { name, value: target, dependents: [] }
-  if target instanceof Function
-    config.expression = true
-    config.valueGetter = target.bind(object)
+  config = new Beholdable()
+  config.value = target
   if target instanceof Array
     'push pop unshift shift reverse sort splice'.split(' ').forEach (prop) ->
       Object.defineProperty(target, prop, {
         value: (args...) ->
-          trigger([name])
+          config.__trigger()
           Array::[prop].call(target, args...)
       })
   Object.defineProperty(object, name, {
     enumerable: true
     configurable: true
     get: -> getValue(config)
-    set: (newVal) -> setValue(config, newVal, trigger)
+    set: (newVal) -> setValue(config, newVal)
   })
   config
 
@@ -37,36 +53,27 @@ getValue = (config) ->
   deps.addActive(config.dependents)
   config.value
 
-setValue = (config, newVal, trigger, changed) ->
+setValue = (config, newVal) ->
   config.value = newVal
-  changed or= [config.name]
-  for depConfig in config.dependents when depConfig.expression
-    changed.push(depConfig.name)
-    setValue(depConfig, deps.track(depConfig), undefined, changed)
-  trigger?(changed)
+  for depConfig in config.dependents
+    setValue(depConfig, deps.track(depConfig))
+  config.__trigger()
   newVal
 
 class Beholden
   constructor: (@object) ->
-    @subscribers = []
     @properties = {}
-    @changes = []
-    for name in Object.keys(@object)
+    for name in Object.keys(@object) when typeof @object[name] isnt 'function'
       @__addProperty(name)
     for name, config of @properties when config.expression
       setValue(config, deps.track(config))
   __addProperty: (name) ->
-    notifier = (names) => pushChanges(@changes, names, @__notify)
-    @properties[name] = defineProperty(@object, name, notifier)
-  __notify: =>
-    for sub in @subscribers when @changes.indexOf(sub.property) > -1
-      sub.fn(@properties[sub.property].value, @object)
-    @changes = []
+    @properties[name] = defineProperty(@object, name)
 
-  subscribe: (property, fn) ->
+  subscribe: (name, fn) ->
     if typeof fn isnt 'function' then throw new TypeError("must provide Function")
-    if typeof property isnt 'string' then throw new TypeError("must provide String")
-    @subscribers.push({property, fn})
+    if typeof name isnt 'string' then throw new TypeError("must provide String")
+    if beholdable = @properties[name] then beholdable.subscribe(fn)
     this
 
   update: (source) ->
@@ -77,17 +84,21 @@ class Beholden
       else @object[key] = value
     this
 
-pushChanges = (list, names, trigger) ->
-  if list.length is 0 then setTimeout(trigger, 0)
-  for name in names
-    if list.indexOf(name) is -1 then list.push(name)
+class Beholder extends Beholdable
+  constructor: (@valueGetter) ->
+    @expression = true
+    super()
+    @value = deps.track(this)
 
 stateKey = "_behold"
 
-main = (obj) ->
-  if obj[stateKey] then return obj[stateKey]
-  beholden = new Beholden(obj)
-  Object.defineProperty(obj, stateKey, { value: beholden })
+main = (thing) ->
+  if thing[stateKey] then return thing[stateKey]
+  if thing instanceof Function
+    beholden = new Beholder(thing)
+  else if thing instanceof Object
+    beholden = new Beholden(thing)
+  Object.defineProperty(thing, stateKey, { value: beholden })
   beholden
 
 if typeof this is 'object' and typeof module is 'object'

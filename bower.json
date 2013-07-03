@@ -1,19 +1,23 @@
 {
   "name": "behold",
-  "description": "simple pubsub/observers using ECMA5 getters/setters",
-  "version": "0.1.1",
+  "description": "simple frp/pubsub/observers using ECMA5 getters/setters",
+  "version": "0.2.0",
   "author": "Matthew Lyon <matthew@lyonheart.us>",
   "keywords": [
-    "pubsub",
     "observable",
     "reactive",
-    "FRP"
+    "FRP",
+    "pubsub",
+    "publish",
+    "subscribe"
   ],
   "tags": [
-    "pubsub",
     "observable",
     "reactive",
-    "FRP"
+    "FRP",
+    "pubsub",
+    "publish",
+    "subscribe"
   ],
   "homepage": "https://github.com/mattly/behold",
   "repository": "git://github.com/mattly/behold.git",

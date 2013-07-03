@@ -1,38 +1,26 @@
 assert = require('assert')
 main = require('../src/index')
 
-obj = {
-  handle: 'mattly'
-  twitter: -> "@#{@handle}"
-  reply: -> "#{@twitter}: "
-}
+obj = { handle: 'mattly' }
 
 beholden = main(obj)
 
 assert.equal(obj._behold, beholden)
 assert.ok(beholden.properties.handle)
 assert.equal(beholden.properties.handle.value, 'mattly')
-assert.ok(beholden.properties.twitter)
-assert.equal(beholden.properties.twitter.value, '@mattly')
-assert.ok(beholden.properties.reply)
-assert.equal(beholden.properties.reply.value, '@mattly: ')
 
 changed = 0
-trackChange = (val, updated) ->
-  assert.deepEqual(updated, obj)
+trackChange = (val) ->
+  assert.equal(val, obj.handle)
   changed += 1
 
 beholden.subscribe('handle', trackChange)
-beholden.subscribe('twitter', trackChange)
-beholden.subscribe('reply', trackChange)
-assert.equal(beholden.subscribers.length, 3)
+assert.equal(beholden.properties.handle.subscribers.length, 1)
 
 obj.handle = 'lyonheart'
 assert.equal(obj.handle, 'lyonheart')
-assert.equal(obj.twitter, '@lyonheart')
-assert.equal(obj.reply, '@lyonheart: ')
 
 afterChange = ->
-  assert.equal(changed, 3)
+  assert.equal(changed, 1)
   console.log('ok')
-setTimeout(afterChange, 2)
+setTimeout(afterChange, 1)

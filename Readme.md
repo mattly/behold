@@ -3,7 +3,9 @@
 Simple PubSub / Observers / Functional Reactive Programming for object
 properties using ECMA5 getters/setters.
 
-Still *very much* a work in progress.
+[![Build Status](https://travis-ci.org/mattly/behold.png?branch=master)][travis]
+
+[travis]: https://travis-ci.org/mattly/behold
 
 ``` javascript
 var obj = {
@@ -27,6 +29,7 @@ var beholder = behold(function(){ return obj.one + obj.two })
 obj.arr.push(4);
 obj.one = 'one'
 
+// # subscriptions fire after the call stack clears
 // arr 4
 // one 'one'
 // two 'Two'

@@ -16,6 +16,8 @@ verifyUpdate = (val, obj) ->
 
 main(add).subscribe(verifyUpdate)
 
+puts = (msg) -> console.log(msg)
+
 assertions = []
 assertions.push -> objA.a = 4
 assertions.push -> objB.b = 5
@@ -25,8 +27,6 @@ assertions.push ->
   objA.a = 12
 
 total = assertions.length
-assertions.push -> assert.equal(total, ran)
+assertions.push -> assert.equal(ran, total)
 
-run = ->
-  require('./chain')(assertions, -> console.log('ok'))
-setTimeout(run, 3)
+require('./chain')(assertions)

@@ -6,10 +6,10 @@ obj = {
 }
 
 expected = undefined
-checkedExpected = 0
+ran = 0
 
 checkExpected = (newVal) ->
-  checkedExpected += 1
+  ran += 1
   assert.deepEqual(newVal, expected)
 
 beholden = main(obj)
@@ -80,10 +80,9 @@ assertions.push ->
 # - some
 
 # make sure all the trigger was called for each op
-totalAssertions = assertions.length
-assertions.push ->
-  assert.equal(totalAssertions, checkedExpected)
+total = assertions.length
+assertions.push -> assert.equal(ran, total)
 
-require('./chain')(assertions, -> console.log('ok'))
+require('./chain')(assertions)
 
 
